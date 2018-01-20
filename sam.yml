@@ -7,4 +7,9 @@ Resources:
       Handler: serverless-qiita-team-template
       Runtime: go1.x 
       CodeUri: build
-      Timeout: 1
+      Timeout: 60
+      Environment:
+        Variables:
+          QIITA_ACCESS_TOKEN: xxxx
+          QIITA_TEAM_NAME: example
+          QIITA_TEAM_TEMPLATE_ID: 0
