@@ -3,12 +3,15 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/kms"
 )
 
 type (
@@ -45,6 +48,25 @@ type (
 		URL string `json:"url"`
 	}
 )
+
+func decrypt(str string) (string, error) {
+	data, err := base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		return "", err
+	}
+
+	svc := kms.New(session.New())
+	input := &kms.DecryptInput{
+		CiphertextBlob: data,
+	}
+
+	resp, err := svc.Decrypt(input)
+	if err != nil {
+		return "", err
+	}
+
+	return string(resp.Plaintext[:]), nil
+}
 
 func (c *Client) GetTemplate() (*Template, error) {
 	client := &http.Client{}
@@ -103,10 +125,23 @@ func (c *Client) CreateItem(title string, body string, tags []Tag) (string, erro
 }
 
 func HandleRequest(ctx context.Context, name string) (string, error) {
+	token, err := decrypt(os.Getenv("QIITA_ACCESS_TOKEN"))
+	if err != nil {
+		return "", err
+	}
+	team, err := decrypt(os.Getenv("QIITA_TEAM_NAME"))
+	if err != nil {
+		return "", err
+	}
+	templateID, err := decrypt(os.Getenv("QIITA_TEAM_TEMPLATE_ID"))
+	if err != nil {
+		return "", err
+	}
+
 	client := &Client{
-		Token:      os.Getenv("QIITA_ACCESS_TOKEN"),
-		Team:       os.Getenv("QIITA_TEAM_NAME"),
-		TemplateID: os.Getenv("QIITA_TEAM_TEMPLATE_ID"),
+		Token:      token,
+		Team:       team,
+		TemplateID: templateID,
 	}
 
 	template, err := client.GetTemplate()

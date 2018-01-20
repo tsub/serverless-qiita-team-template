@@ -8,6 +8,25 @@ Resources:
       Runtime: go1.x 
       CodeUri: build
       Timeout: 60
+      KmsKeyArn:
+        Fn::Join:
+          - ""
+          - - "arn:aws:kms:ap-northeast-1:"
+            - !Ref "AWS::AccountId"
+            - ":key/<YOUR-KMS-KEY-ID>"
+      Policies:
+        - AWSLambdaExecute
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource:
+                Fn::Join:
+                  - ""
+                  - - "arn:aws:kms:ap-northeast-1:"
+                    - !Ref "AWS::AccountId"
+                    - ":key/<YOUR-KMS-KEY-ID>"
       Environment:
         Variables:
           QIITA_ACCESS_TOKEN: xxxx
