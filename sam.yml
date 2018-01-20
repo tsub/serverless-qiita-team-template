@@ -13,3 +13,9 @@ Resources:
           QIITA_ACCESS_TOKEN: xxxx
           QIITA_TEAM_NAME: example
           QIITA_TEAM_TEMPLATE_ID: 0
+      Events:
+        Schedule:
+          Type: Schedule
+          Properties:
+            # TODO: To generalize
+            Schedule: cron(0 1 ? * TUE *) # at 10:00 every Tuesday (JST)
