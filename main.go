@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -124,7 +123,7 @@ func (c *Client) CreateItem(title string, body string, tags []Tag) (string, erro
 	return response.URL, nil
 }
 
-func HandleRequest(ctx context.Context, name string) (string, error) {
+func HandleRequest() (string, error) {
 	token, err := decrypt(os.Getenv("QIITA_ACCESS_TOKEN"))
 	if err != nil {
 		return "", err
