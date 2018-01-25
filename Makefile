@@ -23,11 +23,11 @@ mb:
 
 deploy:
 	aws cloudformation package \
-			--template-file sam.yml \
+			--template-file template.yml \
 			--s3-bucket $(PROJECT) \
-			--output-template-file .sam-output.yml
+			--output-template-file .template-output.yml
 	aws cloudformation deploy \
-			--template-file .sam-output.yml \
+			--template-file .template-output.yml \
 			--stack-name $(PROJECT) \
 			--capabilities CAPABILITY_IAM
 .PHONY: deploy
