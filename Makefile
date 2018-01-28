@@ -20,6 +20,7 @@ build:
 
 mb:
 	aws s3 mb s3://$(PROJECT)
+.PHONY: mb
 
 deploy:
 	aws cloudformation package \
@@ -37,3 +38,9 @@ deploy:
 					KmsKeyId="${KMS_KEY_ID}" \
 					ScheduleExpression="${SCHEDULE_EXPRESSION}"
 .PHONY: deploy
+
+destroy:
+	aws cloudformation delete-stack \
+			--stack-name $(PROJECT)
+	aws s3 rb --force s3://$(PROJECT)
+.PHONY: destroy
