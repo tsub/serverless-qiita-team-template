@@ -29,5 +29,11 @@ deploy:
 	aws cloudformation deploy \
 			--template-file .template-output.yml \
 			--stack-name $(PROJECT) \
-			--capabilities CAPABILITY_IAM
+			--capabilities CAPABILITY_IAM \
+			--parameter-overrides \
+					QiitaAccessToken="${QIITA_ACCESS_TOKEN}" \
+					QiitaTeamName="${QIITA_TEAM_NAME}" \
+					QiitaTeamTemplateId="${QIITA_TEAM_TEMPLATE_ID}" \
+					KmsKeyId="${KMS_KEY_ID}" \
+					ScheduleExpression="${SCHEDULE_EXPRESSION}"
 .PHONY: deploy

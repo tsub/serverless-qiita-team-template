@@ -1,6 +1,18 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
 
+Parameters:
+  QiitaAccessToken:
+    Type: String
+  QiitaTeamName:
+    Type: String
+  QiitaTeamTemplateId:
+    Type: String
+  KmsKeyId:
+    Type: String
+  ScheduleExpression:
+    Type: String
+
 Resources:
   App:
     Type: "AWS::Serverless::Function"
@@ -12,9 +24,12 @@ Resources:
       KmsKeyArn:
         Fn::Join:
           - ""
-          - - "arn:aws:kms:ap-northeast-1:"
+          - - "arn:aws:kms:"
+            - !Ref "AWS::Region"
+            - ":"
             - !Ref "AWS::AccountId"
-            - ":key/<YOUR-KMS-KEY-ID>"
+            - ":key/"
+            - !Ref KmsKeyId
       Policies:
         - AWSLambdaExecute
         - Version: "2012-10-17"
@@ -25,17 +40,19 @@ Resources:
               Resource:
                 Fn::Join:
                   - ""
-                  - - "arn:aws:kms:ap-northeast-1:"
+                  - - "arn:aws:kms:"
+                    - !Ref "AWS::Region"
+                    - ":"
                     - !Ref "AWS::AccountId"
-                    - ":key/<YOUR-KMS-KEY-ID>"
+                    - ":key/"
+                    - !Ref KmsKeyId
       Environment:
         Variables:
-          QIITA_ACCESS_TOKEN: xxxx
-          QIITA_TEAM_NAME: example
-          QIITA_TEAM_TEMPLATE_ID: 0
+          QIITA_ACCESS_TOKEN: !Ref QiitaAccessToken
+          QIITA_TEAM_NAME: !Ref QiitaTeamName
+          QIITA_TEAM_TEMPLATE_ID: !Ref QiitaTeamTemplateId
       Events:
         Schedule:
           Type: Schedule
           Properties:
-            # TODO: To generalize
-            Schedule: cron(0 1 ? * TUE *) # at 10:00 every Tuesday (JST)
+            Schedule: !Ref ScheduleExpression
