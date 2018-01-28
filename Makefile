@@ -2,6 +2,14 @@ PROJECT  = serverless-qiita-team-template
 SRC      ?= $(shell go list ./... | grep -v vendor)
 TESTARGS ?= -v
 
+define encrypt
+	aws kms encrypt \
+			--key-id "${KMS_KEY_ID}" \
+			--query CiphertextBlob \
+			--output text \
+			--plaintext $(1)
+endef
+
 deps:
 	dep ensure
 .PHONY: deps
@@ -32,9 +40,9 @@ deploy:
 			--stack-name $(PROJECT) \
 			--capabilities CAPABILITY_IAM \
 			--parameter-overrides \
-					QiitaAccessToken="${QIITA_ACCESS_TOKEN}" \
-					QiitaTeamName="${QIITA_TEAM_NAME}" \
-					QiitaTeamTemplateId="${QIITA_TEAM_TEMPLATE_ID}" \
+					QiitaAccessToken="$(shell $(call encrypt, ${QIITA_ACCESS_TOKEN}))" \
+					QiitaTeamName="$(shell $(call encrypt, ${QIITA_TEAM_NAME}))" \
+					QiitaTeamTemplateId="$(shell $(call encrypt, ${QIITA_TEAM_TEMPLATE_ID}))" \
 					KmsKeyId="${KMS_KEY_ID}" \
 					ScheduleExpression="${SCHEDULE_EXPRESSION}"
 .PHONY: deploy
