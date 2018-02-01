@@ -52,3 +52,9 @@ destroy:
 			--stack-name $(PROJECT)
 	aws s3 rb --force s3://$(PROJECT)
 .PHONY: destroy
+
+invoke_local:
+	echo "" | sam local invoke \
+			--parameter-values \
+					QiitaAccessToken="$(shell $(call encrypt, ${QIITA_ACCESS_TOKEN}))",QiitaTeamName="$(shell $(call encrypt, ${QIITA_TEAM_NAME}))",QiitaTeamTemplateId="$(shell $(call encrypt, ${QIITA_TEAM_TEMPLATE_ID}))",KmsKeyId="${KMS_KEY_ID}",ScheduleExpression="${SCHEDULE_EXPRESSION}"
+.PHONY: invoke_local
