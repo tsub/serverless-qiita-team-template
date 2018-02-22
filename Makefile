@@ -32,7 +32,7 @@ mb:
 
 deploy:
 	aws cloudformation package \
-			--template-file template.yml \
+			--template-file template.yaml \
 			--s3-bucket $(PROJECT) \
 			--output-template-file .template-output.yml
 	aws cloudformation deploy \
